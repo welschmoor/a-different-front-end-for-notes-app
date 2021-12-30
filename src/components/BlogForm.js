@@ -1,10 +1,10 @@
 
 
 
-import React, {useState} from 'react' 
+import React, { useState } from 'react'
 
 const BlogForm = ({ createBlog, author }) => {
-  const [newBlog, setNewBlog] = useState('') 
+  const [newBlog, setNewBlog] = useState('')
 
   const handleChange = (event) => {
     setNewBlog(event.target.value)
@@ -15,14 +15,13 @@ const BlogForm = ({ createBlog, author }) => {
     createBlog({
       title: newBlog,
       author: author,
-      important: Math.random() > 0.5,
     })
 
     setNewBlog('')
   }
 
   return (
-    <div>
+    <div className="formDiv">
       <h2>Create a new Blog</h2>
 
       <form onSubmit={addBlog}>

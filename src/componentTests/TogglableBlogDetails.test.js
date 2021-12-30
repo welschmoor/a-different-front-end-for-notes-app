@@ -1,4 +1,7 @@
 // CI=true npm test
+// CI=true npm test -- src/componentTests/BlogForm.test.js
+
+// ex 5.16
 
 import React from 'react'
 import '@testing-library/jest-dom/extend-expect'
