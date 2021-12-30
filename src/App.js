@@ -123,12 +123,47 @@ const App = () => {
       })
   }
 
+  /// UPDATE blog likes:
+  const likeHandler = (blog) => {
+    console.log("likes btn klacked")
+    const updatedBlog = {
+      user: blog.user,
+      title: blog.title,
+      author: blog.author,
+      likes: blog.likes + 1,
+      url: blog.url,
+    }
+    // execise 5.8, 5.9
+    blogService
+      .updateLikes(blog.id, updatedBlog)
+      .then(returnedBlog => {
+        // setBlogs(blogs.concat(returnedBlog))
+        setBlogs(prev => {
+          const updatedBloglist = [...prev.filter(e => e.id !== blog.id), returnedBlog]
+          return updatedBloglist
+          // .sort((a, b) => b.likes - a.likes) // execise 5.9 I moved this code outside
+        })
+      })
+  }
+
+  // DELETE 5.10
+  const deleteHandler = (id) => {
+    console.log("delete lkacked")
+    blogService.deleteBlog(id)
+      .then(() => {
+        setBlogs(prev => {
+          const updatedBloglist = [...prev.filter(e => e.id !== id)]
+          return updatedBloglist
+        })
+      })
+  }
+
   return (
     <div>
       <header>
         {user !== null && <div>Hello, {user.username}</div>}
 
-        {user !== null &&<button onClick={logoutHandler}>Logout</button>}
+        {user !== null && <button onClick={logoutHandler}>Logout</button>}
       </header>
 
       {errorStr && <div>{errorStr}</div>}
@@ -136,8 +171,8 @@ const App = () => {
       {/* {user !== null && blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )} */}
-      {user !== null && blogs.map(blog =>
-        <TogglableBlogDetails key={blog.id} blog={blog} />
+      {user !== null && blogs.sort((a, b) => b.likes - a.likes).map(blog =>
+        <TogglableBlogDetails key={blog.id} blog={blog} likeHandler={() => likeHandler(blog)} deleteHandler={() => deleteHandler(blog.id)} loggedInUser={user.username} />
       )}
 
       {user === null && loginForm()}
