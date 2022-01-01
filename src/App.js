@@ -3,10 +3,10 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 
 
-import Blog from './components/Blog'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
 import TogglableBlogDetails from './components/TogglableBlogDetails'
+
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -23,7 +23,7 @@ const App = () => {
 
   // Token Check in Local Storage. Exercise 5.2
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
@@ -38,7 +38,7 @@ const App = () => {
 
     try {
       const user = await loginService.login({ username, password, })
-      window.localStorage.setItem('loggedNoteappUser', JSON.stringify(user)) //Exercise 5.2
+      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user)) //Exercise 5.2
       blogService.setToken(user.token)
       setUser(user)
       setUsername('')
@@ -54,7 +54,7 @@ const App = () => {
   /////////////////////////////////////////////////////
   //    Forms
   const loginForm = () => (
-    <form onSubmit={loginHandler}>
+    <form onSubmit={loginHandler} className='loginform'>
       <div>
         username
         <input type="text" value={username} name="Username" onChange={({ target }) => setUsername(target.value)} />
@@ -125,7 +125,7 @@ const App = () => {
 
   /// UPDATE blog likes:
   const likeHandler = (blog) => {
-    console.log("likes btn klacked")
+    console.log('likes btn klacked')
     const updatedBlog = {
       user: blog.user,
       title: blog.title,
@@ -148,7 +148,7 @@ const App = () => {
 
   // DELETE 5.10
   const deleteHandler = (id) => {
-    console.log("delete lkacked")
+    console.log('delete lkacked')
     blogService.deleteBlog(id)
       .then(() => {
         setBlogs(prev => {
@@ -166,7 +166,7 @@ const App = () => {
         {user !== null && <button onClick={logoutHandler}>Logout</button>}
       </header>
 
-      {errorStr && <div>{errorStr}</div>}
+      {errorStr && <div className='error'>{errorStr}</div>}
       <h2>blogs</h2>
       {/* {user !== null && blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />

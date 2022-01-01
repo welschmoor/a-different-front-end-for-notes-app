@@ -1,5 +1,4 @@
 import React, { useState, useImperativeHandle } from 'react'
-import blogService from '../services/blogs'
 
 
 /// exercise 5.7 forwardRef is actually not needed
@@ -37,10 +36,10 @@ const TogglableBlogDetails = React.forwardRef(({ blog, likeHandler, deleteHandle
       <div style={visible ? showWhenVisible : hideWhenVisible} className="likesDiv">
         by {blog.author}
         <p className='likesParagraph'>Likes: {blog.likes}</p>
-        <button onClick={likeHandler} >Like</button>
+        <button onClick={likeHandler} className="likebutton">Like</button>
 
         {/* only show when author username is the same as logged in user: */}
-        {blog.author === loggedInUser && <button onClick={deleteHandler} >Delete</button>}
+        {blog.author === loggedInUser && <button onClick={deleteHandler} className='deleteBtn'>Delete</button>}
       </div>
       <br />
       <br />

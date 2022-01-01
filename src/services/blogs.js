@@ -19,7 +19,7 @@ const create = async newObject => {
 // ex 5.8
 const updateLikes = async (id, updatedBlog) => {
   const config = { headers: { Authorization: token } }
-  
+
   const response = await axios.put(`${baseUrl}/${id}`, updatedBlog, config)
   return response.data
 }
