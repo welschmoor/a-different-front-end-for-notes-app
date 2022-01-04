@@ -1,3 +1,6 @@
+// ex7.13
+
+
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import userlistService from '../services/userlist'
@@ -7,26 +10,27 @@ import { useSelector } from 'react-redux'
 import UserSingle from '../components/UserSingle'
 
 
+
 const Users = () => {
   const dispatch = useDispatch()
-  const userlist = useSelector(state => state.userlist)
+  const { userlist } = useSelector(state => state)
 
   useEffect(() => {
     userlistService.getAllUsers().then(res => {
       // dispatch to userlist inside store
-      console.log('res:::', res)
       dispatch(initializeUsers(res))
     })
-  }, [dispatch, JSON.stringify(userlist)])
-
+  }, [dispatch])
 
 
   return (
     <div>
+      <h2>Users</h2>
       {userlist.map(e => <UserSingle user={e} key={e.id} />)}
     </div>
   )
 }
+
 
 
 export default Users
