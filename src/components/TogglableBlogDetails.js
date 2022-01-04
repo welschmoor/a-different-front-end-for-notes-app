@@ -3,7 +3,7 @@ import React, { useState, useImperativeHandle } from 'react'
 
 /// exercise 5.7 forwardRef is actually not needed
 const TogglableBlogDetails = React.forwardRef(({ blog, likeHandler, deleteHandler, loggedInUser }, ref) => {
-  console.log(blog)
+
   const [visible, setVisible] = useState(false)
 
   const blogStyle = {

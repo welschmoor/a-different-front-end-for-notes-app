@@ -1,23 +1,32 @@
 import React, { useState, useEffect, useRef } from 'react'
 import blogService from './services/blogs'
 import loginService from './services/login'
-
+import { initializeBlogs, createBlogDO, deleteBlogDO, updateVotesDO, undoVotesDO } from './redux/blogReducer'
+import { loginDO } from './redux/userReducer'
 
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
 import TogglableBlogDetails from './components/TogglableBlogDetails'
+import { useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
+
+import { Routes, Route } from 'react-router-dom'
+import Header from './components/Header'
+import Home from './pages/Home'
+import Users from './pages/Users'
 
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
+
   const [errorStr, setErrorStr] = useState('')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
+  // const [user, setUser] = useState(null)
 
-  // const [blogInput, setBlogInput] = useState('')
+  const dispatch = useDispatch()
+  const { blogs: blogsDispatched, user } = useSelector(state => state)
 
-  // const [newBlog, setNewBlog] = useState({})
+  // console.log(blogzz)
 
   const blogFormRef = useRef()
 
@@ -26,7 +35,7 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)
+      dispatch(loginDO(user))
       blogService.setToken(user.token)
     }
   }, [])
@@ -35,12 +44,16 @@ const App = () => {
 
   const loginHandler = async (event) => {
     event.preventDefault()
+    setErrorStr(null)
 
     try {
       const user = await loginService.login({ username, password, })
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user)) //Exercise 5.2
+
       blogService.setToken(user.token)
-      setUser(user)
+
+      dispatch(loginDO(user))
+
       setUsername('')
       setPassword('')
     } catch (exception) {
@@ -73,58 +86,36 @@ const App = () => {
     </Togglable>
   )
 
-
   const logoutHandler = () => {
     localStorage.clear()
-    setUser(null)
+    dispatch(loginDO(null))
   }
 
-
+  //////////////////////////////////////////////
+  // Fetching all blogs ex7.10
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs)
-    )
+    blogService.getAll().then(blogs => {
+      dispatch(initializeBlogs(blogs))
+    })
   }, [])
 
+
   //////////////////////////////////////////////
-  // Add new Blog
-  // const addNewBlogHandler = async e => {
-  //   e.preventDefault()
-  //   console.log("clacked add new blog")
-
-  //   try {
-  //     const response = await blogService.create(newBlog)
-  //     setBlogs([...blogs, response])
-  //     setErrorStr('')
-  //     setBlogInput('')
-  //     setNewBlog({ title: '' })
-  //   } catch (error) {
-  //     setErrorStr(error.message)
-  //     console.log("error in add new Blog handler", error)
-  //   }
-  // }
-
-  // const inputHandlerNewBlog = e => {
-  //   setNewBlog({
-  //     id: blogs.length + 1,
-  //     title: e.target.value,
-  //     author: user.username,
-  //     url: "url",
-  //     likes: 1,
-  //   })
-  // }
-
+  // Add new Blog ex7.10
   const addBlog = (blogObject) => {
     blogFormRef.current.toggleVisibility()
+
     blogService
       .create(blogObject)
       .then(returnedBlog => {
-        setBlogs(blogs.concat(returnedBlog))
+        dispatch(createBlogDO(returnedBlog))
       })
   }
 
-  /// UPDATE blog likes:
+  /////////////////////////////////////////////////
+  /// UPDATE blog likes ex7.11:
   const likeHandler = (blog) => {
+    dispatch(updateVotesDO(blog.id))
     console.log('likes btn klacked')
     const updatedBlog = {
       user: blog.user,
@@ -133,56 +124,52 @@ const App = () => {
       likes: blog.likes + 1,
       url: blog.url,
     }
-    // execise 5.8, 5.9
+
     blogService
       .updateLikes(blog.id, updatedBlog)
       .then(returnedBlog => {
-        // setBlogs(blogs.concat(returnedBlog))
-        setBlogs(prev => {
-          const updatedBloglist = [...prev.filter(e => e.id !== blog.id), returnedBlog]
-          return updatedBloglist
-          // .sort((a, b) => b.likes - a.likes) // execise 5.9 I moved this code outside
-        })
+        console.log(returnedBlog)
+      }).catch(error => {
+        console.log(error.message)
+        dispatch(undoVotesDO(blog.id))
       })
   }
 
-  // DELETE 5.10
+  // Delete ex7.11
   const deleteHandler = (id) => {
     console.log('delete lkacked')
     blogService.deleteBlog(id)
       .then(() => {
-        setBlogs(prev => {
-          const updatedBloglist = [...prev.filter(e => e.id !== id)]
-          return updatedBloglist
-        })
+        // setBlogs(prev => {
+        //   const updatedBloglist = [...prev.filter(e => e.id !== id)]
+        //   return updatedBloglist
+        // })
+        dispatch(deleteBlogDO(id))
+
       })
   }
 
   return (
     <div>
-      <header>
-        {user !== null && <div>Hello, {user.username}</div>}
+      <Header logoutHandler={logoutHandler} />
 
-        {user !== null && <button onClick={logoutHandler}>Logout</button>}
-      </header>
 
       {errorStr && <div className='error'>{errorStr}</div>}
       <h2>blogs</h2>
-      {/* {user !== null && blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
-      )} */}
-      {user !== null && blogs.sort((a, b) => b.likes - a.likes).map(blog =>
+
+
+      {user !== null && blogsDispatched.sort((a, b) => b.likes - a.likes).map(blog =>
         <TogglableBlogDetails key={blog.id} blog={blog} likeHandler={() => likeHandler(blog)} deleteHandler={() => deleteHandler(blog.id)} loggedInUser={user.username} />
       )}
 
-      {user === null && loginForm()}
+      <Routes>
+        <Route exact path="/" element={<Home />} />
+        <Route exact path="/users" element={<Users />} />
+      </Routes>
 
+      {user === null && loginForm()}
       {user !== null && noteForm()}
 
-      {/* {user !== null && <form onSubmit={addNewBlogHandler} >
-        <input type="text" placeholder='new blog entry' onChange={inputHandlerNewBlog} required />
-        <button type="submit" >Submit</button>
-      </form>} */}
     </div>
   )
 }
