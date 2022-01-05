@@ -121,7 +121,7 @@ const App = () => {
         <Route path="/users" element={<Users />} />
         <Route path="/user/:id" element={<User />} />
         <Route path="/blog/:id" element={<BlogPage />} />
-        <Route exact path="/" element={<Home />} />
+        <Route exact path="/" element={user && <Home />} />
       </Routes>
 
       {user === null && loginForm()}

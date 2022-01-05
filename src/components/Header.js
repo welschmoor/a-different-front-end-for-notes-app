@@ -1,11 +1,21 @@
 // ex7.16
 import React from 'react'
-import { useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { loginDO } from '../redux/userReducer'
 
-const Header = ({ logoutHandler }) => {
+const Header = () => {
+  const dispatch = useDispatch()
 
   const { user } = useSelector(state => state)
+
+
+  const navigate = useNavigate()
+  const logoutHandler = () => {
+    localStorage.clear()
+    dispatch(loginDO(null))
+    navigate('/')
+  }
 
 
   return (
