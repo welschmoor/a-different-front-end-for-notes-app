@@ -20,6 +20,7 @@ const Home = () => {
       author: blog.author,
       likes: blog.likes + 1,
       url: blog.url,
+      comments: blog.comments,
     }
 
     blogService

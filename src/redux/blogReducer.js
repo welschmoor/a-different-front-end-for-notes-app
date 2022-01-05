@@ -29,6 +29,12 @@ const blogReducer = (state = initialState.blogs, action) => {
     console.log('noteInQ.likes', noteInQ.likes)
     return [...state.filter(e => e.id !== action.payload.id), { ...noteInQ, likes: noteInQ.likes - 1 }]
   }
+  else if (action.type === 'ADD_COMMENT') {
+    const noteInQ = state.find(e => e.id === action.payload.id)
+    const stateObj = [...state.filter(e => e.id !== action.payload.id), action.payload.newComment]
+    console.log('stateObj', stateObj)
+    return stateObj
+  }
 
   return state  // default
 }
@@ -54,6 +60,10 @@ export const updateVotesDO = (id) => {
 
 export const undoVotesDO = (id) => {
   return { type: 'UNDO_VOTE', payload: { id } }
+}
+
+export const addCommentDO = (id, newComment) => {
+  return { type: 'ADD_COMMENT', payload: { id: id, newComment: newComment } }
 }
 
 export default blogReducer

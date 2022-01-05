@@ -11,13 +11,19 @@ const getAll = () => {
   return request.then(response => response.data)
 }
 
+const getSingle = async (id) => {
+  const request = await axios.get(`${baseUrl}/${id}`)
+  return request.data
+
+}
+
 const create = async newObject => {
   const config = { headers: { Authorization: token } }
   const response = await axios.post(baseUrl, newObject, config)
   return response.data
 }
 
-// ex 5.8
+// ex 5.8 does this work for updateLikes?
 const updateLikes = async (id, updatedBlog) => {
   const config = { headers: { Authorization: token } }
 
@@ -32,4 +38,13 @@ const deleteBlog = async id => {
   return response.data
 }
 
-export default { getAll, create, setToken, updateLikes, deleteBlog }
+// ex 7.18
+// const addComment = async (id, updatedBlog) => {
+//   const config = { headers: { Authorization: token } }
+//   const url = `/api/blogs/postcomment/${id}`
+//   console.log(url)
+//   const response = await axios.put(url, updatedBlog, config)
+//   return response.data
+// }
+
+export default { getAll, create, setToken, updateLikes, deleteBlog, getSingle }

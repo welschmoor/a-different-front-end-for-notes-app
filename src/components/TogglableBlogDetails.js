@@ -1,5 +1,5 @@
 import React, { useState, useImperativeHandle } from 'react'
-
+import { Link } from 'react-router-dom'
 
 /// exercise 5.7 forwardRef is actually not needed
 const TogglableBlogDetails = React.forwardRef(({ blog, likeHandler, deleteHandler, loggedInUser }, ref) => {
@@ -29,7 +29,7 @@ const TogglableBlogDetails = React.forwardRef(({ blog, likeHandler, deleteHandle
 
   return (
     <div style={blogStyle} className="blogdiv" >
-      <span className="blogtitle" >{blog.title}</span>
+      <span className="blogtitle" ><Link to={`/blog/${blog.id}`} >{blog.title}</Link></span>
       <button onClick={() => setVisible(p => !p)}>{visible ? 'Hide' : 'Show'}</button>
 
 

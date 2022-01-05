@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 
 import userlistService from '../services/userlist'
 import { initializeUsers } from '../redux/userlistReducer'
@@ -32,7 +32,7 @@ const User = () => {
       <ul>
         {user && user.blogs.map(e => {
           return (
-            <li key={e.id}>{e.title}</li>
+            <li key={e.id}><Link to={`/blog/${e.id}`}>{e.title}</Link></li>
           )
         })}
       </ul>
